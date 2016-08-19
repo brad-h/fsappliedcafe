@@ -1,3 +1,4 @@
 .projekt/*
 .paket/*
 packages/*
+.fake/*
