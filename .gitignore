@@ -2,3 +2,9 @@
 .paket/*
 packages/*
 .fake/*
+TestResult.xml
+build/*
+**/bin/*
+**/obj/*
+tests/*
+
