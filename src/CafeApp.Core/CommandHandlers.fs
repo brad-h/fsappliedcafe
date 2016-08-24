@@ -1,16 +1,24 @@
 module CommandHandlers
 
+open System
+open Chessie.ErrorHandling
+
 open States
 open Events
-open System
 open Commands
+open Errors
 
 let execute state command =
   match command with
-  | OpenTab tab -> [TabOpened tab]
+  | OpenTab tab ->
+    match state with
+    | ClosedTab _ -> [TabOpened tab] |> ok
+    | _ -> TabAlreadyOpened |> fail
   | _ -> failwith "Todo"
 
 let evolve state command =
-  let event = execute state command
-  let newState = List.fold apply state event
-  (newState, event)
+  match execute state command with
+  | Ok (events, _) ->
+    let newState = List.fold apply state events
+    (newState, events) |> ok
+  | Bad err -> Bad err
