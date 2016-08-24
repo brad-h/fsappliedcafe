@@ -7,13 +7,25 @@ open States
 open Events
 open Commands
 open Errors
+open Domain
+
+let handleOpenTab tab = function
+  | ClosedTab _ -> [TabOpened tab] |> ok
+  | _ -> TabAlreadyOpened |> fail
+
+let handlePlaceOrder order = function
+  | OpenedTab _ ->
+    if List.isEmpty order.Foods && List.isEmpty order.Drinks then
+      fail CanNotPlaceEmptyOrder
+    else
+      [OrderPlaced order] |> ok
+  | ClosedTab _ -> fail CanNotOrderWithClosedTab
+  | _ -> fail OrderAlreadyPlaced
 
 let execute state command =
   match command with
-  | OpenTab tab ->
-    match state with
-    | ClosedTab _ -> [TabOpened tab] |> ok
-    | _ -> TabAlreadyOpened |> fail
+  | OpenTab tab -> handleOpenTab tab state
+  | PlaceOrder order -> handlePlaceOrder order state
   | _ -> failwith "Todo"
 
 let evolve state command =
