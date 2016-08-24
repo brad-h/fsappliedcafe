@@ -8,14 +8,7 @@ open States
 open Commands
 open Events
 open Errors
-
-let tab = {Id = Guid.NewGuid(); TableNumber = 1}
-let coke = Drink {
-  MenuNumber = 1
-  Name = "Coke"
-  Price = 1.5m
-}
-let order = {Tab = tab; Foods = []; Drinks = []}
+open TestData
 
 [<Test>]
 let ``Can place only drinks order`` () =
