@@ -4,7 +4,7 @@ if [ ! -d ".paket" ]; then
   mkdir .paket
 fi
 
-if [ ! -e "paket.bootstrapper.exe" ]; then
+if [ ! -e ".paket/paket.bootstrapper.exe" ]; then
   curl -L "$url/releases/download/3.13.3/paket.bootstrapper.exe" -o .paket/paket.bootstrapper.exe
 fi
 
