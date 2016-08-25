@@ -59,7 +59,6 @@ let handleServeDrink drink tabId = function
     | AlreadyServedDrink ipo _ ->
       CanNotServeAlreadyServedDrink drink |> fail
     | _ -> [drinkServed] |> ok
-  | _ -> failwith "Todo"
 
 let (|NonOrderedFood|_|) order food =
   match List.contains food order.Foods with
