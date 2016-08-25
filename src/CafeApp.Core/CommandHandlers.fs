@@ -65,6 +65,11 @@ let (|NonOrderedFood|_|) order food =
   | false -> Some Food
   | true -> None
 
+let (|AlreadyPreparedFood|_|) ipo food =
+  match List.contains food ipo.PreparedFood with
+  | true -> Some food
+  | false -> None
+
 let handlePrepareFood food tabId = function
   | PlacedOrder order ->
     match food with
@@ -74,7 +79,14 @@ let handlePrepareFood food tabId = function
   | ServedOrder _ -> OrderAlreadyServed |> fail
   | OpenedTab _ -> CanNotPrepareForNonPlacedOrder |> fail
   | ClosedTab _ -> CanNotPrepareWithClosedTab |> fail
-  | _ -> failwith "Todo"
+  | OrderInProgress ipo ->
+    let order = ipo.PlacedOrder
+    match food with
+    | NonOrderedFood order _ ->
+      CanNotPrepareNonOrderedFood food |> fail
+    | AlreadyPreparedFood ipo _ ->
+      CanNotPrepareAlreadyPreparedFood food |> fail
+    | _ -> [FoodPrepared (food, tabId)] |> ok
 
 let execute state command =
   match command with

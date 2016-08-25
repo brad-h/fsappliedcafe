@@ -24,6 +24,22 @@ let ``Can Prepare Food`` () =
   |> WithEvents [FoodPrepared (salad, order.Tab.Id)]
 
 [<Test>]
+let ``Can prepare food during order in progress`` () =
+  let order = {order with Foods = [salad;pizza]}
+  let orderInProgress = {
+    PlacedOrder = order
+    ServedFood = []
+    ServedDrinks = []
+    PreparedFood = [pizza]
+  }
+  let expected = {orderInProgress with PreparedFood = [salad;pizza]}
+
+  Given (OrderInProgress orderInProgress)
+  |> When (PrepareFood (salad, order.Tab.Id))
+  |> ThenStateShouldBe (OrderInProgress expected)
+  |> WithEvents [FoodPrepared (salad, order.Tab.Id)]
+
+[<Test>]
 let ``Can not prepare a non-ordered food`` () =
   let order = {order with Foods = [pizza]}
   Given (PlacedOrder order)
@@ -41,3 +57,31 @@ let ``Can not prepare with closed tab`` () =
   Given (ClosedTab None)
   |> When (PrepareFood (salad, order.Tab.Id))
   |> ShouldFailWith CanNotPrepareWithClosedTab
+
+[<Test>]
+let ``Can not prepare non-ordered food during order in progress`` () =
+  let order = {order with Foods = [salad]}
+  let orderInProgress = {
+    PlacedOrder = order
+    ServedFood = []
+    ServedDrinks = []
+    PreparedFood = []
+  }
+
+  Given (OrderInProgress orderInProgress)
+  |> When (PrepareFood (pizza, order.Tab.Id))
+  |> ShouldFailWith (CanNotPrepareNonOrderedFood pizza)
+
+[<Test>]
+let ``Can not prepare already prepared food during order in progress`` () =
+  let order = {order with Foods = [salad]}
+  let orderInProgress = {
+    PlacedOrder = order
+    ServedFood = []
+    ServedDrinks = []
+    PreparedFood = [salad]
+  }
+
+  Given (OrderInProgress orderInProgress)
+  |> When (PrepareFood (salad, order.Tab.Id))
+  |> ShouldFailWith (CanNotPrepareAlreadyPreparedFood salad)
