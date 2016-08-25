@@ -32,6 +32,11 @@ let (|ServeDrinkCompletesOrder|_|) order drink =
   | true -> Some drink
   | false -> None
 
+let (|AlreadyServedDrink|_|) ipo drink =
+  match List.contains drink ipo.ServedDrinks with
+  | true -> Some drink
+  | false -> None
+
 let handleServeDrink drink tabId = function
   | PlacedOrder order ->
     let event = DrinkServed (drink,tabId)
@@ -45,6 +50,15 @@ let handleServeDrink drink tabId = function
   | ServedOrder _ -> OrderAlreadyServed |> fail
   | OpenedTab _ -> CanNotServeForNonPlacedOrder |> fail
   | ClosedTab _ -> CanNotServeWithClosedTab |> fail
+  | OrderInProgress ipo ->
+    let order = ipo.PlacedOrder
+    let drinkServed = DrinkServed (drink, ipo.PlacedOrder.Tab.Id)
+    match drink with
+    | NonOrderedDrink order _ ->
+      CanNotServeNonOrderedDrink drink |> fail
+    | AlreadyServedDrink ipo _ ->
+      CanNotServeAlreadyServedDrink drink |> fail
+    | _ -> [drinkServed] |> ok
   | _ -> failwith "Todo"
 
 let (|NonOrderedFood|_|) order food =

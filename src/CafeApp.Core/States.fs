@@ -24,6 +24,9 @@ let apply state event =
     } |> OrderInProgress
   | OrderInProgress ipo, OrderServed (order, _) ->
     ServedOrder order
+  | OrderInProgress ipo, DrinkServed (item, _) ->
+    {ipo with ServedDrinks = item :: ipo.ServedDrinks}
+    |> OrderInProgress
   | PlacedOrder order, FoodPrepared (food, _) ->
     {
       PlacedOrder = order

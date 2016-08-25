@@ -14,3 +14,4 @@ type Error =
 | CanNotPrepareNonOrderedFood of Food
 | CanNotPrepareForNonPlacedOrder
 | CanNotPrepareWithClosedTab
+| CanNotServeAlreadyServedDrink of Drink
