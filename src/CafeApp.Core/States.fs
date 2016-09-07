@@ -40,4 +40,6 @@ let apply state event =
   | OrderInProgress ipo, FoodServed (item, _) ->
     {ipo with ServedFood = item :: ipo.ServedFood}
     |> OrderInProgress
+  | ServedOrder order, TabClosed payment ->
+    ClosedTab (Some payment.Tab.Id)
   | _ -> state
