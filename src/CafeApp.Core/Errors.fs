@@ -16,3 +16,6 @@ type Error =
 | CanNotPrepareWithClosedTab
 | CanNotServeAlreadyServedDrink of Drink
 | CanNotPrepareAlreadyPreparedFood of Food
+| CanNotServeAlreadyServedFood of Food
+| CanNotServeNonPreparedFood of Food
+| CanNotServeNonOrderedFood of Food
