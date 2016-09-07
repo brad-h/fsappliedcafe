@@ -37,6 +37,11 @@ let (|AlreadyServedDrink|_|) ipo drink =
   | true -> Some drink
   | false -> None
 
+let (|ServeDrinkCompletesIPOrder|_|) ipo drink =
+  match isServingDrinkCompletesIPOrder ipo drink with
+  | true -> Some drink
+  | false -> None
+
 let handleServeDrink drink tabId = function
   | PlacedOrder order ->
     let event = DrinkServed (drink,tabId)
@@ -58,6 +63,10 @@ let handleServeDrink drink tabId = function
       CanNotServeNonOrderedDrink drink |> fail
     | AlreadyServedDrink ipo _ ->
       CanNotServeAlreadyServedDrink drink |> fail
+    | ServeDrinkCompletesIPOrder ipo _ ->
+      drinkServed ::
+        [OrderServed (order, payment order)]
+      |> ok
     | _ -> [drinkServed] |> ok
 
 let (|NonOrderedFood|_|) order food =
