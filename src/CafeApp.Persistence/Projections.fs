@@ -70,4 +70,3 @@ let projectReadModel actions = function
     actions.Cashier.Remove tabId
     actions.Table.CloseTab payment.Tab
   ] |> Async.Parallel
-| _ -> failwith "Todo"
