@@ -1,4 +1,4 @@
-module CommandHandlers
+module CommandHandler
 
 open Queries
 open Commands

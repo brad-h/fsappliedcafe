@@ -53,6 +53,13 @@ let getTables () =
   |> Seq.toList
   |> async.Return
 
+let getTableByTableNumber tableNumber =
+  if tables.ContainsKey tableNumber then
+    tables.[tableNumber] |> Some |> async.Return
+  else
+    None |> async.Return
+
 let tableQueries = {
   GetTables = getTables
+  GetTableByTableNumber = getTableByTableNumber
 }
