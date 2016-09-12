@@ -10,6 +10,16 @@ open CommandApi
 open InMemory
 open System.Text
 open Chessie.ErrorHandling
+open Events
+open Projections
+
+let eventsStream = new Control.Event<Event list>()
+
+let project event =
+  projectReadModel inMemoryActions event
+  |> Async.RunSynchronously |> ignore
+
+let projectEvents = List.iter project
 
 let commandApiHandler eventStore (context : HttpContext) = async {
   let payload =
@@ -19,6 +29,8 @@ let commandApiHandler eventStore (context : HttpContext) = async {
       inMemoryQueries eventStore payload
   match response with
   | Ok ((state, events), _) ->
+    eventsStream.Trigger(events)
+    do! eventStore.SaveEvents state events
     return! OK (sprintf "%A" state) context
   | Bad err ->
     return! BAD_REQUEST err.Head.Message context
@@ -36,6 +48,7 @@ let main argv =
     choose [
       commandApi eventStore
     ]
+  eventsStream.Publish.Add(projectEvents)
   let cfg =
     {defaultConfig with
       bindings = [Http.HttpBinding.mkSimple HTTP "0.0.0.0" 8083]}
