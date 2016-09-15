@@ -57,6 +57,7 @@
     <Compile Include="PlaceOrder.fs" />
     <Compile Include="ServeDrinks.fs" />
     <Compile Include="PrepareFood.fs" />
+    <Compile Include="ServeFood.fs" />
     <Compile Include="CommandApi.fs" />
   </ItemGroup>
   <PropertyGroup>
