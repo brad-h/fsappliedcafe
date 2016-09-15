@@ -54,6 +54,8 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="CommandHandler.fs" />
     <Compile Include="OpenTab.fs" />
+    <Compile Include="PlaceOrder.fs" />
+    <Compile Include="ServeDrinks.fs" />
     <Compile Include="CommandApi.fs" />
   </ItemGroup>
   <PropertyGroup>

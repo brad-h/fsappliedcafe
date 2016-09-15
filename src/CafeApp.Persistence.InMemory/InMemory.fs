@@ -6,7 +6,7 @@ open Waiter
 open Cashier
 open Projections
 open Queries
-// open Items
+open Items
 open EventStore
 open NEventStore
 
@@ -32,6 +32,8 @@ let toDoQueries = {
 let inMemoryQueries = {
   Table = tableQueries
   ToDo = toDoQueries
+  Food = foodQueries
+  Drink = drinkQueries
 }
 
 let inMemoryActions = {
