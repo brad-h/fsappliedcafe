@@ -6,6 +6,8 @@ open Suave.Successful
 open Suave.RequestErrors
 open Suave.Operators
 open Suave.Filters
+open Suave.WebSocket
+open Suave.Sockets.Control.SocketMonad
 open CommandApi
 open InMemory
 open System.Text
@@ -43,6 +45,17 @@ let commandApi eventStore =
     >=> POST
     >=> commandApiHandler eventStore
 
+let socketHandler (ws : WebSocket) cx = socket {
+  while true do
+    let! events =
+      Control.Async.AwaitEvent(eventsStream.Publish)
+      |> Suave.Sockets.SocketOp.ofAsync
+    for event in events do
+      let eventData =
+        event |> eventJObj |> string |> Encoding.UTF8.GetBytes
+      do! ws.send Text eventData true
+}
+
 [<EntryPoint>]
 let main argv =
   let app =
@@ -50,6 +63,8 @@ let main argv =
     choose [
       commandApi eventStore
       queriesApi inMemoryQueries eventStore
+      path "/websocket" >=>
+        handShake socketHandler
     ]
   eventsStream.Publish.Add(projectEvents)
   let cfg =

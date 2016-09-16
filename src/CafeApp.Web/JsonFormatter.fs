@@ -9,6 +9,7 @@ open Suave.Operators
 open Suave.Successful
 open Suave.RequestErrors
 open ReadModel
+open Events
 
 let (.=) key (value : obj) = new JProperty(key, value)
 
@@ -171,3 +172,60 @@ let toFoodsJSON =
 
 let toDrinksJSON =
   toReadModelsJson drinkJObj "drinks"
+
+let eventJObj = function
+| TabOpened tab ->
+  jobj [
+    "event" .= "TabOpened"
+    "data" .= tabJObj tab
+  ]
+| OrderPlaced order ->
+  jobj [
+    "event" .= "OrderPlaced"
+    "data" .= jobj [
+      "order" .= orderJObj order
+    ]
+  ]
+| DrinkServed (item, tabId) ->
+  jobj [
+    "event" .= "DrinkServed"
+    "data" .= jobj [
+      "drink" .= drinkJObj item
+      "tabId" .= tabId
+    ]
+  ]
+| FoodPrepared (item, tabId) ->
+  jobj [
+    "event" .= "FoodPrepared"
+    "data" .= jobj [
+      "food" .= foodJObj item
+      "tabId" .= tabId
+    ]
+  ]
+| FoodServed (item, tabId) ->
+  jobj [
+    "event" .= "FoodServed"
+    "data" .= jobj [
+      "food" .= foodJObj item
+      "tabId" .= tabId
+    ]
+  ]
+| OrderServed (order, payment) ->
+  jobj [
+    "event" .= "OrderServed"
+    "data" .= jobj [
+      "order" .= orderJObj order
+      "tabId" .= payment.Tab.Id
+      "tableNumber" .= payment.Tab.TableNumber
+      "amount" .= payment.Amount
+    ]
+  ]
+| TabClosed payment ->
+  jobj [
+    "event" .= "TabClosed"
+    "data" .= jobj [
+      "amountPaid" .= payment.Amount
+      "tabId" .= payment.Tab.Id
+      "tableNumber" .= payment.Tab.TableNumber
+    ]
+  ]
