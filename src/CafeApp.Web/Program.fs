@@ -12,6 +12,7 @@ open System.Text
 open Chessie.ErrorHandling
 open Events
 open Projections
+open JsonFormatter
 
 let eventsStream = new Control.Event<Event list>()
 
@@ -31,9 +32,9 @@ let commandApiHandler eventStore (context : HttpContext) = async {
   | Ok ((state, events), _) ->
     eventsStream.Trigger(events)
     do! eventStore.SaveEvents state events
-    return! OK (sprintf "%A" state) context
+    return! toStateJson state context
   | Bad err ->
-    return! BAD_REQUEST err.Head.Message context
+    return! toErrorJson err.Head context
 }
 
 let commandApi eventStore =
