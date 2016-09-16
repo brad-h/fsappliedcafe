@@ -13,6 +13,7 @@ open Chessie.ErrorHandling
 open Events
 open Projections
 open JsonFormatter
+open QueriesApi
 
 let eventsStream = new Control.Event<Event list>()
 
@@ -48,6 +49,7 @@ let main argv =
     let eventStore = inMemoryEventStore ()
     choose [
       commandApi eventStore
+      queriesApi inMemoryQueries eventStore
     ]
   eventsStream.Publish.Add(projectEvents)
   let cfg =
