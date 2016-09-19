@@ -16,6 +16,8 @@ open Events
 open Projections
 open JsonFormatter
 open QueriesApi
+open System.Reflection
+open System.IO
 
 let eventsStream = new Control.Event<Event list>()
 
@@ -56,6 +58,11 @@ let socketHandler (ws : WebSocket) cx = socket {
       do! ws.send Text eventData true
 }
 
+let clientDir =
+  let exePath = Assembly.GetEntryAssembly().Location
+  let exeDir = (new FileInfo(exePath)).Directory
+  Path.Combine(exeDir.FullName, "public")
+
 [<EntryPoint>]
 let main argv =
   let app =
@@ -65,10 +72,15 @@ let main argv =
       queriesApi inMemoryQueries eventStore
       path "/websocket" >=>
         handShake socketHandler
+      GET >=> choose [
+        path "/" >=> Files.browseFileHome "index.html"
+        Files.browseHome
+      ]
     ]
   eventsStream.Publish.Add(projectEvents)
   let cfg =
     {defaultConfig with
+      homeFolder = Some(clientDir)
       bindings = [Http.HttpBinding.mkSimple HTTP "0.0.0.0" 8083]}
   startWebServer cfg app
   0 // return an integer exit code

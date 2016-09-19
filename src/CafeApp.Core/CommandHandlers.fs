@@ -111,7 +111,7 @@ let (|ServeFoodCompletesIPOrder|_|) ipo food =
   match isServingFoodCompletesIPOrder ipo food with
   | true -> Some food
   | false -> None
-
+  
 let handleServeFood food tabId = function
 | OrderInProgress ipo ->
   let order = ipo.PlacedOrder
@@ -123,6 +123,10 @@ let handleServeFood food tabId = function
     CanNotServeAlreadyServedFood food |> fail
   | UnPreparedFood ipo _ ->
       CanNotServeNonPreparedFood food |> fail
+  | ServeFoodCompletesIPOrder ipo _ ->
+    foodServed ::
+      [OrderServed (ipo.PlacedOrder, payment order)]
+    |> ok
   | _ -> [foodServed] |> ok
 | PlacedOrder _ -> CanNotServeNonPreparedFood food |> fail
 | ServedOrder _ -> OrderAlreadyServed |> fail

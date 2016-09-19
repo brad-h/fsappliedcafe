@@ -33,4 +33,5 @@ else # For Non Windows
     exit $exit_code
   fi
   mono packages/FAKE/tools/FAKE.exe $@ --fsiargs build.fsx
+  export NPM_FILE_PATH=$(which npm)
 fi

@@ -8,3 +8,5 @@ build/*
 **/obj/*
 tests/*
 
+client/*
+.vscode/.browse.*
