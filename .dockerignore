@@ -1,0 +1,9 @@
+.paket/paket.exe
+paket-files
+build
+project-init.sh
+.projekt
+packages
+client/public
+client/node_modules
+
